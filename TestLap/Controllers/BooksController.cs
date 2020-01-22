@@ -11,7 +11,7 @@ using TestLap.Models;
 
 namespace TestLap.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class BooksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,9 +22,15 @@ namespace TestLap.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(String SearchString)
         {
-            return View(await _context.Book.ToListAsync());
+            var listBook = await _context.Book.ToListAsync();
+            if (SearchString == null)
+            {
+                return View(listBook);
+            }
+            listBook = await _context.Book.Where(x => x.Name.ToLower().Equals(SearchString.ToLower().Trim()) || x.Des.ToLower().Equals(SearchString.ToLower().Trim())).ToListAsync();
+            return View(listBook);
         }
 
         // GET: Books/Details/5
